@@ -6,6 +6,7 @@ try {
     die('Error......');
 }
 
+// SQL calls
 function getSqlResult($preparedQuery, $returnData = true, $paramsTypeString = '', array $params = [])
 {
     global $conn;
@@ -96,6 +97,17 @@ function insertNewMatric($formNumber, $email, $college, $programme, $session, $l
     return $result;
 }
 
+function deleteMatricNumber($id){
+    $query = "DELETE FROM `matric_numbers` WHERE id = ?";
+    $result = getSqlResult($query, false, 'i', [$id]);
+
+    if ($result['affected_rows'] == 1) {
+        return true;
+    }
+    return false;
+}
+
+// Modifiers (helpers)
 function jsonResponse($status, $error, $message, $data)
 {
     return json_encode([
@@ -122,6 +134,7 @@ function studentResponse($student, $newStudent = true)
     ];
 }
 
+// Validators
 function validateFormNumber($formNumber)
 {
     if (is_numeric($formNumber)) {
@@ -185,17 +198,8 @@ function validateProgramme($programme){
     return false;
 }
 
+// Log
 function logAction($ip, $request, $response, $matricId, $error){
     $query = "INSERT INTO `matric_numbers_logs` (`id`, `user_ip`, `request`, `response`, `error`, `matric_number_id`, `created_at`, `updated_at`) VALUES (NULL, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, NULL)";
     getSqlResult($query, false, 'sssii', [$ip, $request, $response, $error, $matricId]);
-}
-
-function deleteMatricNumber($id){
-    $query = "DELETE FROM `matric_numbers` WHERE id = ?";
-    $result = getSqlResult($query, false, 'i', [$id]);
-
-    if ($result['affected_rows'] == 1) {
-        return true;
-    }
-    return false;
 }
