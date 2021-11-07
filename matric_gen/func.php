@@ -50,6 +50,14 @@ function searchOldStudent($matric_number)
     return $result['data'];
 }
 
+function searchOldStudentWithName($matric_number, $firstName, $lastName)
+{
+    $query = "select * from matric_numbers WHERE matric_number = ? AND first_name = ? AND last_name = ?";
+    $result = getSqlResult($query, true, 'sss', [$matric_number, $firstName, $lastName]);
+
+    return $result['data'];
+}
+
 function deactivateOldMatric($matric_number)
 {
     $query = "UPDATE matric_numbers SET active = 0 WHERE matric_number = ?";
@@ -61,7 +69,7 @@ function deactivateOldMatric($matric_number)
     return false;
 }
 
-function insertNewMatric($formNumber, $email, $college, $programme, $session, $level)
+function insertNewMatric($formNumber, $email, $college, $programme, $session, $level, $firstName, $lastName)
 {
     $query = "SELECT matric_number FROM `matric_numbers` WHERE college = ? AND programme = ? AND session = ? AND level = ? ORDER BY matric_number ASC";
     $result = getSqlResult($query, true, 'sssi', [$college, $programme, $session, $level]);
@@ -71,16 +79,16 @@ function insertNewMatric($formNumber, $email, $college, $programme, $session, $l
     // matricExamples: BU20CIT1005, BU20PUH3003
     $defaultMatric = 'BU' . substr($session, 2, 2) . $programme . (substr($level, 0, 1) * 1000 + $count + 1);
 
-    $query2 = "INSERT INTO `matric_numbers` (`id`, `matric_number`, `form_number`, `email`, `college`, `programme`, `session`, `level`, `created_at`, `updated_at`) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, NULL)";
-    $result2 = getSqlResult($query2, false, 'sssssss', [$defaultMatric, $formNumber, $email, $college, $programme, $session, $level]);
+    $query2 = "INSERT INTO `matric_numbers` (`id`, `matric_number`, `form_number`, `email`, `first_name`,`last_name`,`college`, `programme`, `session`, `level`, `created_at`, `updated_at`) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, NULL)";
+    $result2 = getSqlResult($query2, false, 'sssssssss', [$defaultMatric, $formNumber, $email, $firstName, $lastName, $college, $programme, $session, $level]);
     if ($result2['affected_rows'] < 0) {
         foreach ($result['data'] as $index => $data) {
             $humanIndex = $index + 1;
             $number = (int) substr($data->matric_number, 8, 3);
             if ($humanIndex != $number) {
                 $freeMatric = 'BU' . substr($session, 2, 2) . $programme . (substr($level, 0, 1) * 1000 + $humanIndex);
-                $query2 = "INSERT INTO `matric_numbers` (`id`, `matric_number`, `form_number`, `email`, `college`, `programme`, `session`, `level`, `created_at`, `updated_at`) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, NULL)";
-                $result = getSqlResult($query2, false, 'sssssss', [$freeMatric, $formNumber, $email, $college, $programme, $session, $level]);
+                $query2 = "INSERT INTO `matric_numbers` (`id`, `matric_number`, `form_number`, `email`, `first_name`,`last_name`, `college`, `programme`, `session`, `level`, `created_at`, `updated_at`) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, NULL)";
+                $result = getSqlResult($query2, false, 'sssssssss', [$freeMatric, $formNumber, $email, $firstName, $lastName, $college, $programme, $session, $level]);
                 break;
             }
         }
@@ -103,6 +111,8 @@ function studentResponse($student, $newStudent = true)
     return [
         "matric_number" => $student->matric_number,
         "form_number"   => $student->form_number,
+        "firstName"     => $student->first_name,
+        "lastName"      => $student->last_name,
         "email"         => $student->email,
         "college"       => $student->college,
         "programme"     => $student->programme,
@@ -128,7 +138,7 @@ function validateMatricNumber($matricNumber)
     if (!is_numeric($matricNumber)) {
         return true;
     }
-    if (strpos($matricNumber, '/') !== false || strpos($matricNumber, 'BU') !== false) {
+    if (strpos($matricNumber, '/') !== false || strpos(strtolower($matricNumber), 'bu') !== false) {
         return true;
     }
     return false;
@@ -139,7 +149,7 @@ function validateSession($session)
     if (strlen($session) == 9) {
         if (strpos($session, '/') !== false) {
             $ses = explode('/', $session);
-            if ((int)$ses[1] > (int)$ses[0]) {
+            if ((int)$ses[1] == (int)($ses[0]+1)) {
                 return true;
             }
         }

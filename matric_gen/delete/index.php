@@ -3,7 +3,7 @@ header("Content-Type: application/json");
 
 require "../func.php";
 
-$required = array('matricNumber', 'reason');
+$required = array('matricNumber', 'reason', 'firstName', 'lastName');
 
 if (!(count(array_intersect_key(array_flip($required), $_POST)) === count($required))) {
     echo jsonResponse(5, true, "Invalid REQUEST", null);
@@ -12,6 +12,8 @@ if (!(count(array_intersect_key(array_flip($required), $_POST)) === count($requi
 
 $matricNumber = htmlspecialchars(stripslashes(trim($_POST['matricNumber'])));
 $reason = htmlspecialchars(stripslashes(trim($_POST['reason'])));
+$firstName = htmlspecialchars(stripslashes(trim($_POST['firstName'])));
+$lastName = htmlspecialchars(stripslashes(trim($_POST['lastName'])));
 
 $ip = $_SERVER['REMOTE_ADDR'];
 $req = json_encode($_POST);
@@ -24,15 +26,15 @@ if (!validateMatricNumber($matricNumber)) {
 }
 
 if (strlen($reason) == 0) {
-    $res = jsonResponse(2, true, "Invalid Reason", null);
+    $res = jsonResponse(2, true, "Reason can not be empty", null);
     echo $res;
     logAction($ip, $req, $res, null, 1);
     die();
 }
 
-$student = searchOldStudent($matricNumber);
+$student = searchOldStudentWithName($matricNumber, $firstName, $lastName);
 if (!(isset($student) && count($student) > 0)) {
-    $res = jsonResponse(2, true, "Matric number does not exist", null);
+    $res = jsonResponse(2, true, "Matric number and details does not match our records", null);
     echo $res;
     logAction($ip, $req, $res, null, 1);
     die();

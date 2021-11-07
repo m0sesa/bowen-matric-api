@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:8889
--- Generation Time: Nov 06, 2021 at 04:40 PM
+-- Generation Time: Nov 07, 2021 at 04:05 PM
 -- Server version: 5.7.34
 -- PHP Version: 7.4.21
 
@@ -61,6 +61,8 @@ CREATE TABLE `matric_numbers` (
   `matric_number` varchar(25) NOT NULL,
   `form_number` varchar(25) NOT NULL,
   `email` varchar(150) NOT NULL,
+  `first_name` varchar(50) NOT NULL,
+  `last_name` varchar(50) NOT NULL,
   `college` varchar(5) NOT NULL,
   `programme` varchar(4) NOT NULL,
   `session` varchar(9) NOT NULL,
@@ -69,13 +71,6 @@ CREATE TABLE `matric_numbers` (
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Dumping data for table `matric_numbers`
---
-
-INSERT INTO `matric_numbers` (`id`, `matric_number`, `form_number`, `email`, `college`, `programme`, `session`, `level`, `active`, `created_at`, `updated_at`) VALUES
-(4, 'BU21CIT1001', '50000', 'lolu@bowen.edu.ng', 'COCCS', 'CIT', '2021/2022', 100, 1, '2021-11-06 16:35:31', NULL);
 
 -- --------------------------------------------------------
 
@@ -93,21 +88,6 @@ CREATE TABLE `matric_numbers_logs` (
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Dumping data for table `matric_numbers_logs`
---
-
-INSERT INTO `matric_numbers_logs` (`id`, `user_ip`, `request`, `response`, `error`, `matric_number_id`, `created_at`, `updated_at`) VALUES
-(1, '127.0.0.1', '{\"formNumber\":\"50000\",\"email\":\"lolu@bowen.edu.ng\",\"college\":\"COCCS\",\"programme\":\"CIT\",\"session\":\"2021\\/2022\",\"level\":\"100\",\"isFreshStudent\":\"1\",\"extra\":\"yes\"}', '{\"status\":1,\"error\":false,\"mesage\":\"Matric number generated\",\"data\":{\"matric_number\":\"BU21CIT1001\",\"form_number\":\"50000\",\"email\":\"lolu@bowen.edu.ng\",\"college\":\"COCCS\",\"programme\":\"CIT\",\"session\":\"2021\\/2022\",\"level\":100,\"old_matric\":null}}', 0, 1, '2021-11-06 16:02:57', NULL),
-(2, '127.0.0.1', '{\"formNumber\":\"50000\",\"email\":\"lolu@bowen.edu.ng\",\"college\":\"COCCS\",\"programme\":\"CIT\",\"session\":\"2021\\/2022\",\"level\":\"100\",\"isFreshStudent\":\"0\",\"extra\":\"yes\"}', '{\"status\":2,\"error\":true,\"mesage\":\"Matric number does not exist\",\"data\":null}', 1, NULL, '2021-11-06 16:03:07', NULL),
-(3, '127.0.0.1', '{\"matricNumber\":\"BU21CIT1001\",\"reason\":\"hh\"}', '{\"status\":1,\"error\":false,\"mesage\":\"Matric number deleted\",\"data\":{\"matric_number\":null,\"form_number\":null,\"email\":null,\"college\":null,\"programme\":null,\"session\":null,\"level\":null,\"old_matric\":null}}', 0, NULL, '2021-11-06 16:24:46', NULL),
-(4, '127.0.0.1', '{\"formNumber\":\"50000\",\"email\":\"lolu@bowen.edu.ng\",\"college\":\"COCCS\",\"programme\":\"CIT\",\"session\":\"2021\\/2022\",\"level\":\"100\",\"isFreshStudent\":\"0\",\"extra\":\"yes\"}', '{\"status\":2,\"error\":true,\"mesage\":\"Matric number does not exist\",\"data\":null}', 1, NULL, '2021-11-06 16:27:23', NULL),
-(5, '127.0.0.1', '{\"formNumber\":\"50000\",\"email\":\"lolu@bowen.edu.ng\",\"college\":\"COCCS\",\"programme\":\"CIT\",\"session\":\"2021\\/2022\",\"level\":\"100\",\"isFreshStudent\":\"1\",\"extra\":\"yes\"}', '{\"status\":1,\"error\":false,\"mesage\":\"Matric number generated\",\"data\":{\"matric_number\":\"BU21CIT1001\",\"form_number\":\"50000\",\"email\":\"lolu@bowen.edu.ng\",\"college\":\"COCCS\",\"programme\":\"CIT\",\"session\":\"2021\\/2022\",\"level\":100,\"old_matric\":null}}', 0, 2, '2021-11-06 16:27:37', NULL),
-(6, '127.0.0.1', '{\"matricNumber\":\"BU21CIT1001\",\"reason\":\"hh\"}', '{\"status\":1,\"error\":false,\"mesage\":\"Matric number deleted\",\"data\":{\"matric_number\":\"BU21CIT1001\",\"form_number\":\"50000\",\"email\":\"lolu@bowen.edu.ng\",\"college\":\"COCCS\",\"programme\":\"CIT\",\"session\":\"2021\\/2022\",\"level\":100,\"old_matric\":\"50000\"}}', 0, NULL, '2021-11-06 16:27:41', NULL),
-(7, '127.0.0.1', '{\"formNumber\":\"50000\",\"email\":\"lolu@bowen.edu.ng\",\"college\":\"COCCS\",\"programme\":\"CIT\",\"session\":\"2021\\/2022\",\"level\":\"100\",\"isFreshStudent\":\"1\",\"extra\":\"yes\"}', '{\"status\":1,\"error\":false,\"mesage\":\"Matric number generated\",\"data\":{\"matric_number\":\"BU21CIT1001\",\"form_number\":\"50000\",\"email\":\"lolu@bowen.edu.ng\",\"college\":\"COCCS\",\"programme\":\"CIT\",\"session\":\"2021\\/2022\",\"level\":100,\"old_matric\":null}}', 0, 3, '2021-11-06 16:28:21', NULL),
-(8, '127.0.0.1', '{\"matricNumber\":\"BU21CIT1001\",\"reason\":\"hh\"}', '{\"status\":1,\"error\":false,\"mesage\":\"Matric number deleted\",\"data\":{\"matric_number\":\"BU21CIT1001\",\"form_number\":\"50000\",\"email\":\"lolu@bowen.edu.ng\",\"college\":\"COCCS\",\"programme\":\"CIT\",\"session\":\"2021\\/2022\",\"level\":100,\"old_matric\":null}}', 0, NULL, '2021-11-06 16:28:31', NULL),
-(9, '127.0.0.1', '{\"formNumber\":\"50000\",\"email\":\"lolu@bowen.edu.ng\",\"college\":\"COCCS\",\"programme\":\"CIT\",\"session\":\"2021\\/2022\",\"level\":\"100\",\"isFreshStudent\":\"1\",\"extra\":\"yes\"}', '{\"status\":1,\"error\":false,\"mesage\":\"Matric number generated\",\"data\":{\"matric_number\":\"BU21CIT1001\",\"form_number\":\"50000\",\"email\":\"lolu@bowen.edu.ng\",\"college\":\"COCCS\",\"programme\":\"CIT\",\"session\":\"2021\\/2022\",\"level\":100,\"old_matric\":null}}', 0, 4, '2021-11-06 16:35:31', NULL);
 
 -- --------------------------------------------------------
 
@@ -229,13 +209,13 @@ ALTER TABLE `colleges`
 -- AUTO_INCREMENT for table `matric_numbers`
 --
 ALTER TABLE `matric_numbers`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `matric_numbers_logs`
 --
 ALTER TABLE `matric_numbers_logs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `programmes`

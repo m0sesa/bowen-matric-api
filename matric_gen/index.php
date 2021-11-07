@@ -25,7 +25,7 @@ Status Codes:
     5: Invalid request
 */
 
-$required = array('formNumber', 'email', 'college', 'programme', 'session', 'level', 'isFreshStudent');
+$required = array('formNumber', 'email', 'college', 'programme', 'session', 'level', 'isFreshStudent', 'firstName', 'lastName');
 
 if (!(count(array_intersect_key(array_flip($required), $_POST)) === count($required))) {
     echo jsonResponse(5, true, "Invalid REQUEST", null);
@@ -39,6 +39,8 @@ $college = htmlspecialchars(stripslashes(trim($_POST['college'])));
 $email = htmlspecialchars(stripslashes(trim($_POST['email'])));
 $programme = htmlspecialchars(stripslashes(trim($_POST['programme'])));
 $level = htmlspecialchars(stripslashes(trim($_POST['level'])));
+$firstName = htmlspecialchars(stripslashes(trim($_POST['firstName'])));
+$lastName = htmlspecialchars(stripslashes(trim($_POST['lastName'])));
 
 $ip = $_SERVER['REMOTE_ADDR'];
 $req = json_encode($_POST);
@@ -71,6 +73,20 @@ if (!validateCollege($college)) {
     die();
 }
 
+if (empty($firstName)){
+    $res = jsonResponse(2, true, "Firstname can not be empty", null);
+    echo $res;
+    logAction($ip, $req, $res , null, 1);
+    die();
+}
+
+if (empty($lastName)){
+    $res = jsonResponse(2, true, "Lastname can not be empty", null);
+    echo $res;
+    logAction($ip, $req, $res , null, 1);
+    die();
+}
+
 if ((int)htmlspecialchars(stripslashes(trim($_POST['isFreshStudent']))) === 1) {
     if (!validateFormNumber($formNumber)) {
         $res = jsonResponse(2, true, "Invalid Form Number format", null);
@@ -87,7 +103,7 @@ if ((int)htmlspecialchars(stripslashes(trim($_POST['isFreshStudent']))) === 1) {
         die();
     }
 
-    $insert = insertNewMatric($formNumber, $email, $college, $programme, $session, $level);
+    $insert = insertNewMatric($formNumber, $email, $college, $programme, $session, $level, $firstName, $lastName);
     if ($insert['affected_rows'] == -1) {
         $res = jsonResponse(4, true, "Something went wrong", null);
         echo $res;
@@ -119,7 +135,7 @@ if ((int)htmlspecialchars(stripslashes(trim($_POST['isFreshStudent']))) === 1) {
         logAction($ip, $req, $res , null, 1);
         die();
     }
-    $insert = insertNewMatric($formNumber, $email, $college, $programme, $session, $level);
+    $insert = insertNewMatric($formNumber, $email, $college, $programme, $session, $level, $firstName, $lastName);
     if ($insert['affected_rows'] == -1) {
         $res = jsonResponse(4, true, "Something went wrong", null);
         echo $res;
