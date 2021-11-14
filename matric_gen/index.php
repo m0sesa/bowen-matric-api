@@ -42,7 +42,7 @@ if (count($_POST) == 0) {
         ]
     );
 
-    $students = searcStudents($session);
+    $students = searchStudents($session);
     $modStudents = [];
     foreach ($students as $student) {
         array_push($modStudents, studentResponse($student, true));

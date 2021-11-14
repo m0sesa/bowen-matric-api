@@ -43,7 +43,7 @@ function searchFreshStudent($formNumber, $session)
     return $result['data'];
 }
 
-function searcStudents($session)
+function searchStudents($session)
 {
     $query = "select * from matric_numbers WHERE session = ?";
     $result = getSqlResult($query, true, 's', [$session]);
