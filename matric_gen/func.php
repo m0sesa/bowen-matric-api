@@ -43,6 +43,14 @@ function searchFreshStudent($formNumber, $session)
     return $result['data'];
 }
 
+function searchStudents($session)
+{
+    $query = "select * from matric_numbers WHERE session = ?";
+    $result = getSqlResult($query, true, 's', [$session]);
+
+    return $result['data'];
+}
+
 function searchOldStudent($matric_number)
 {
     $query = "select * from matric_numbers WHERE matric_number = ?";

@@ -16,7 +16,13 @@ $firstName = htmlspecialchars(stripslashes(trim($_POST['firstName'])));
 $lastName = htmlspecialchars(stripslashes(trim($_POST['lastName'])));
 
 $ip = $_SERVER['REMOTE_ADDR'];
-$req = json_encode($_POST);
+$req = json_encode(
+    [
+        "url" => $_SERVER['REQUEST_URI'] . $_SERVER['REQUEST_URI'],
+        "method" => "POST",
+        "body" => $_POST
+    ]
+);
 
 if (!validateMatricNumber($matricNumber)) {
     $res = jsonResponse(2, true, "Invalid Matric Number format", null);

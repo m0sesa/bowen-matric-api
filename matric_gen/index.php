@@ -25,10 +25,48 @@ Status Codes:
     5: Invalid request
 */
 
+if (count($_POST) == 0) {
+    $requiredGet = array('session');
+    $ip = $_SERVER['REMOTE_ADDR'];
+
+    if (!(count(array_intersect_key(array_flip($requiredGet), $_GET)) === count($requiredGet))) {
+        echo jsonResponse(5, true, "Invalid REQUEST", null);
+        die();
+    }
+    $session = htmlspecialchars(stripslashes(trim($_GET['session'])));
+    $req = json_encode(
+        [
+            "url" => $_SERVER['REQUEST_URI'] . $_SERVER['REQUEST_URI'],
+            "method" => "GET",
+            "body" => $_GET
+        ]
+    );
+
+    $students = searcStudents($session);
+    $modStudents = [];
+    foreach ($students as $student) {
+        array_push($modStudents, studentResponse($student, true));
+    }
+    $res = jsonResponse(1, false, "Success", $modStudents);
+    echo $res;
+    logAction($ip, $req, $res, null, 0);
+    die();
+}
+
 $required = array('formNumber', 'email', 'college', 'programme', 'session', 'level', 'isFreshStudent', 'firstName', 'lastName');
+$ip = $_SERVER['REMOTE_ADDR'];
+$req = json_encode(
+    [
+        "url" => $_SERVER['REQUEST_URI'] . $_SERVER['REQUEST_URI'],
+        "method" => "POST",
+        "body" => $_POST
+    ]
+);
 
 if (!(count(array_intersect_key(array_flip($required), $_POST)) === count($required))) {
-    echo jsonResponse(5, true, "Invalid REQUEST", null);
+    $res = jsonResponse(5, true, "Invalid REQUEST", null);
+    echo $req;
+    logAction($ip, $req, $res, null, 1);
     die();
 }
 
@@ -42,9 +80,6 @@ $level = htmlspecialchars(stripslashes(trim($_POST['level'])));
 $firstName = htmlspecialchars(stripslashes(trim($_POST['firstName'])));
 $lastName = htmlspecialchars(stripslashes(trim($_POST['lastName'])));
 
-$ip = $_SERVER['REMOTE_ADDR'];
-$req = json_encode($_POST);
-
 if (!validateLevel($level)) {
     $res = jsonResponse(2, true, "Invalid Level", null);
     echo $res;
@@ -55,35 +90,35 @@ if (!validateLevel($level)) {
 if (!validateSession($session)) {
     $res = jsonResponse(2, true, "Invalid Session", null);
     echo $res;
-    logAction($ip, $req, $res , null, 1);
+    logAction($ip, $req, $res, null, 1);
     die();
 }
 
 if (!validateProgramme($programme)) {
     $res = jsonResponse(2, true, "Invalid Programme", null);
     echo $res;
-    logAction($ip, $req, $res , null, 1);
+    logAction($ip, $req, $res, null, 1);
     die();
 }
 
 if (!validateCollege($college)) {
     $res = jsonResponse(2, true, "Invalid College", null);
     echo $res;
-    logAction($ip, $req, $res , null, 1);
+    logAction($ip, $req, $res, null, 1);
     die();
 }
 
-if (empty($firstName)){
+if (empty($firstName)) {
     $res = jsonResponse(2, true, "Firstname can not be empty", null);
     echo $res;
-    logAction($ip, $req, $res , null, 1);
+    logAction($ip, $req, $res, null, 1);
     die();
 }
 
-if (empty($lastName)){
+if (empty($lastName)) {
     $res = jsonResponse(2, true, "Lastname can not be empty", null);
     echo $res;
-    logAction($ip, $req, $res , null, 1);
+    logAction($ip, $req, $res, null, 1);
     die();
 }
 
@@ -91,7 +126,7 @@ if ((int)htmlspecialchars(stripslashes(trim($_POST['isFreshStudent']))) === 1) {
     if (!validateFormNumber($formNumber)) {
         $res = jsonResponse(2, true, "Invalid Form Number format", null);
         echo $res;
-        logAction($ip, $req, $res , null, 1);
+        logAction($ip, $req, $res, null, 1);
         die();
     }
 
@@ -99,7 +134,7 @@ if ((int)htmlspecialchars(stripslashes(trim($_POST['isFreshStudent']))) === 1) {
     if (isset($student) && count($student) > 0) {
         $res = jsonResponse(3, true, "Student already have a matric number", studentResponse($student[0]));
         echo $res;
-        logAction($ip, $req, $res , null, 1);
+        logAction($ip, $req, $res, null, 1);
         die();
     }
 
@@ -107,43 +142,43 @@ if ((int)htmlspecialchars(stripslashes(trim($_POST['isFreshStudent']))) === 1) {
     if ($insert['affected_rows'] == -1) {
         $res = jsonResponse(4, true, "Something went wrong", null);
         echo $res;
-        logAction($ip, $req, $res , null, 1);
+        logAction($ip, $req, $res, null, 1);
         die();
     }
     $student = searchFreshStudent($formNumber, $session)[0];
     $res = jsonResponse(1, false, "Matric number generated", studentResponse($student));
     echo $res;
-    logAction($ip, $req, $res , $student->id, 0);
+    logAction($ip, $req, $res, $student->id, 0);
 } else {
 
     if (!validateMatricNumber($formNumber)) {
         $res = jsonResponse(2, true, "Invalid Matric Number format", null);
         echo $res;
-        logAction($ip, $req, $res , null, 1);
+        logAction($ip, $req, $res, null, 1);
         die();
     }
     $student = searchOldStudent($formNumber); //formNumber same as old matric number here
     if (!(isset($student) && count($student) > 0)) {
         $res = jsonResponse(2, true, "Matric number does not exist", null);
         echo $res;
-        logAction($ip, $req, $res , null, 1);
+        logAction($ip, $req, $res, null, 1);
         die();
     }
     if (!deactivateOldMatric($formNumber)) {
         $res = jsonResponse(3, true, "Matric number changed alread", studentResponse(searchFreshStudent($formNumber, $session)[0], false));
         echo $res;
-        logAction($ip, $req, $res , null, 1);
+        logAction($ip, $req, $res, null, 1);
         die();
     }
     $insert = insertNewMatric($formNumber, $email, $college, $programme, $session, $level, $firstName, $lastName);
     if ($insert['affected_rows'] == -1) {
         $res = jsonResponse(4, true, "Something went wrong", null);
         echo $res;
-        logAction($ip, $req, $res , null, 1);
+        logAction($ip, $req, $res, null, 1);
         die();
     }
     $student = searchFreshStudent($formNumber, $session)[0];
     $res = jsonResponse(1, false, "Matric number generated", studentResponse($student, false));
     echo $res;
-    logAction($ip, $req, $res , $student->id, 0);
+    logAction($ip, $req, $res, $student->id, 0);
 }
