@@ -1,7 +1,7 @@
 <?php
 
 try {
-    $conn = new mysqli("localhost", "root", "root", "sshub");
+    $conn = new mysqli("localhost", "root", "root", "sshub_bowen");
 } catch (Exception $e) {
     die('Error......');
 }
@@ -39,6 +39,14 @@ function searchFreshStudent($formNumber, $session)
 {
     $query = "select * from matric_numbers WHERE form_number = ? AND session = ?";
     $result = getSqlResult($query, true, 'ss', [$formNumber, $session]);
+
+    return $result['data'];
+}
+
+function searcStudents($session)
+{
+    $query = "select * from matric_numbers WHERE session = ?";
+    $result = getSqlResult($query, true, 's', [$session]);
 
     return $result['data'];
 }
@@ -179,7 +187,7 @@ function validateLevel($level){
 }
 
 function validateCollege($college){
-    $query = "SELECT * FROM colleges WHERE college_code = ?";
+    $query = "SELECT * FROM faculty WHERE FacultyCode = ?";
     $result = getSqlResult($query, false, 's', [$college]);
 
     if ($result['affected_rows'] == 1) {
@@ -189,7 +197,7 @@ function validateCollege($college){
 }
 
 function validateProgramme($programme){
-    $query = "SELECT * FROM programmes WHERE programme_code = ?";
+    $query = "SELECT * FROM departments WHERE DepartmentCode = ?";
     $result = getSqlResult($query, false, 's', [$programme]);
 
     if ($result['affected_rows'] == 1) {
