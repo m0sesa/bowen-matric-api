@@ -65,7 +65,7 @@ $req = json_encode(
 
 if (!(count(array_intersect_key(array_flip($required), $_POST)) === count($required))) {
     $res = jsonResponse(5, true, "Invalid REQUEST", null);
-    echo $req;
+    echo $res;
     logAction($ip, $req, $res, null, 1);
     die();
 }
