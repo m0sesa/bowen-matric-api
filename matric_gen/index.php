@@ -30,7 +30,9 @@ if (count($_POST) == 0) {
     $ip = $_SERVER['REMOTE_ADDR'];
 
     if (!(count(array_intersect_key(array_flip($requiredGet), $_GET)) === count($requiredGet))) {
-        echo jsonResponse(5, true, "Invalid REQUEST", null);
+        $res = jsonResponse(5, true, "Invalid REQUEST", null);
+        echo $res;
+        logAction($ip, $req, $res, null, 1);
         die();
     }
     $session = htmlspecialchars(stripslashes(trim($_GET['session'])));

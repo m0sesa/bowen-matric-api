@@ -145,10 +145,7 @@ function studentResponse($student, $newStudent = true)
 // Validators
 function validateFormNumber($formNumber)
 {
-    if (is_numeric($formNumber)) {
-        return true;
-    }
-    return false;
+    return true;
 }
 
 function validateMatricNumber($matricNumber)
