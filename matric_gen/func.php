@@ -78,15 +78,15 @@ function deactivateOldMatric($matric_number)
     return false;
 }
 
-function insertNewMatric($formNumber, $email, $college, $programme, $session, $level, $firstName, $lastName)
+function insertNewMatric($formNumber, $email, $college, $programme, $session, $level, $firstName, $lastName, $type)
 {
-    $query = "SELECT matric_number FROM `matric_numbers` WHERE college = ? AND programme = ? AND session = ? AND level = ? ORDER BY matric_number ASC";
+    $query = "SELECT matric_number FROM `matric_numbers` WHERE college = ? AND programme = ? AND session = ? AND level = ? AND matric_number LIKE '$type%'ORDER BY matric_number ASC";
     $result = getSqlResult($query, true, 'sssi', [$college, $programme, $session, $level]);
     $count = $result['affected_rows'];
     // The database constraint is instrumental to not getting duplicate matric here, 
     // so the database has to be setup correctly to ensure unique matric_numbers
     // matricExamples: BU20CIT1005, BU20PUH3003
-    $defaultMatric = 'BU' . substr($session, 2, 2) . $programme . (substr($level, 0, 1) * 1000 + $count + 1);
+    $defaultMatric = $type . substr($session, 2, 2) . $programme . (substr($level, 0, 1) * 1000 + $count + 1);
 
     $query2 = "INSERT INTO `matric_numbers` (`id`, `matric_number`, `form_number`, `email`, `first_name`,`last_name`,`college`, `programme`, `session`, `level`, `created_at`, `updated_at`) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, NULL)";
     $result2 = getSqlResult($query2, false, 'sssssssss', [$defaultMatric, $formNumber, $email, $firstName, $lastName, $college, $programme, $session, $level]);
@@ -201,6 +201,17 @@ function validateProgramme($programme){
         return true;
     }
     return false;
+}
+
+function validateType($type){
+    $types = [
+        "BU", // Undergraduate
+        "BP", // Postgraduate
+        "BD", // Distance Learning
+        "BW" // Weekend Programme
+    ];
+    
+    return in_array($type, $types);
 }
 
 // Log

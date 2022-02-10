@@ -81,6 +81,15 @@ $programme = htmlspecialchars(stripslashes(trim($_POST['programme'])));
 $level = htmlspecialchars(stripslashes(trim($_POST['level'])));
 $firstName = htmlspecialchars(stripslashes(trim($_POST['firstName'])));
 $lastName = htmlspecialchars(stripslashes(trim($_POST['lastName'])));
+// optional field Options: BU, BP, BW
+$type = isset($_POST['type']) ? strtoupper(htmlspecialchars(stripslashes(trim($_POST['type'])))) : 'BU';
+
+if (!validateType($type)) {
+    $res = jsonResponse(2, true, "Invalid Type", null);
+    echo $res;
+    logAction($ip, $req, $res, null, 1);
+    die();
+}
 
 if (!validateLevel($level)) {
     $res = jsonResponse(2, true, "Invalid Level", null);
@@ -140,7 +149,7 @@ if ((int)htmlspecialchars(stripslashes(trim($_POST['isFreshStudent']))) === 1) {
         die();
     }
 
-    $insert = insertNewMatric($formNumber, $email, $college, $programme, $session, $level, $firstName, $lastName);
+    $insert = insertNewMatric($formNumber, $email, $college, $programme, $session, $level, $firstName, $lastName, $type);
     if ($insert['affected_rows'] == -1) {
         $res = jsonResponse(4, true, "Something went wrong", null);
         echo $res;
@@ -172,7 +181,7 @@ if ((int)htmlspecialchars(stripslashes(trim($_POST['isFreshStudent']))) === 1) {
         logAction($ip, $req, $res, null, 1);
         die();
     }
-    $insert = insertNewMatric($formNumber, $email, $college, $programme, $session, $level, $firstName, $lastName);
+    $insert = insertNewMatric($formNumber, $email, $college, $programme, $session, $level, $firstName, $lastName, $type);
     if ($insert['affected_rows'] == -1) {
         $res = jsonResponse(4, true, "Something went wrong", null);
         echo $res;
